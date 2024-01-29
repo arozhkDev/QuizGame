@@ -15,6 +15,8 @@ public class Quiz : MonoBehaviour
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
     bool hasAnsweredEarly = true;
+    int blinkCount = 3;
+    float blinkDuration = 0.4f;
 
     [Header("Button Colors")]
     [SerializeField] Sprite defaultAnswerSprite;
@@ -89,6 +91,7 @@ public class Quiz : MonoBehaviour
             questionText.text = $"Sorry, the correct answer was;\n {correctAnswer}";
             buttonImage = answerButtons[correctAnswerIndex].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
+            StartCoroutine(BlinkCorrectAnswer(buttonImage, blinkCount, blinkDuration));
         }
     }
 
@@ -143,5 +146,21 @@ public class Quiz : MonoBehaviour
             Image buttonImage = answerButtons[i].GetComponent<Image>();
             buttonImage.sprite = defaultAnswerSprite;
         }
+    }
+
+    IEnumerator BlinkCorrectAnswer(Image buttonImage, int blinkCount, float blinkDuration)
+    {
+        Sprite originalSprite = buttonImage.sprite;
+
+        for (int i = 0; i < blinkCount; i++)
+        {
+            buttonImage.CrossFadeAlpha(0f, blinkDuration, false);
+            yield return new WaitForSeconds(blinkDuration);
+
+            buttonImage.CrossFadeAlpha(1f, blinkDuration, false);
+            yield return new WaitForSeconds(blinkDuration);
+        }
+
+        buttonImage.sprite = originalSprite;
     }
 }
